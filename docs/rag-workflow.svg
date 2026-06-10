@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 760" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0ea5e9"/>
+      <stop offset="1" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f1f5f9"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrowDash" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#6366f1"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1280" height="760" fill="url(#bg)"/>
+
+  <!-- Title -->
+  <text x="640" y="50" text-anchor="middle" font-size="30" font-weight="700" fill="#0f172a">Autoimmune Research Assistant</text>
+  <text x="640" y="78" text-anchor="middle" font-size="16" fill="#64748b">Retrieval-Augmented Generation (RAG) — grounded answers from a curated research library</text>
+
+  <!-- ===== Lane A: Ingestion ===== -->
+  <rect x="24" y="104" width="1232" height="196" rx="20" fill="#eef2ff"/>
+  <circle cx="56" cy="136" r="13" fill="url(#accent)"/>
+  <text x="56" y="141" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">1</text>
+  <text x="80" y="141" font-size="16" font-weight="700" fill="#3730a3">Ingestion</text>
+  <text x="178" y="141" font-size="13" fill="#6366f1">runs once, whenever the papers change</text>
+
+  <!-- Lane A boxes -->
+  <g filter="url(#shadow)">
+    <rect x="56"  y="160" width="248" height="110" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="360" y="160" width="248" height="110" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="664" y="160" width="248" height="110" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="968" y="160" width="248" height="110" rx="14" fill="#ffffff" stroke="#c7d2fe"/>
+  </g>
+
+  <text x="180" y="202" text-anchor="middle" font-size="26">📄</text>
+  <text x="180" y="232" text-anchor="middle" font-size="15" font-weight="600" fill="#1e293b">Curated Nature PDFs</text>
+  <text x="180" y="252" text-anchor="middle" font-size="12" fill="#64748b">data/papers/</text>
+
+  <text x="484" y="202" text-anchor="middle" font-size="26">✂️</text>
+  <text x="484" y="232" text-anchor="middle" font-size="15" font-weight="600" fill="#1e293b">Extract &amp; chunk text</text>
+  <text x="484" y="252" text-anchor="middle" font-size="12" fill="#64748b">pypdf · ~1.2k-char windows</text>
+
+  <text x="788" y="202" text-anchor="middle" font-size="26">🔢</text>
+  <text x="788" y="232" text-anchor="middle" font-size="15" font-weight="600" fill="#1e293b">Gemini embeddings</text>
+  <text x="788" y="252" text-anchor="middle" font-size="12" fill="#64748b">text-embedding-004</text>
+
+  <text x="1092" y="202" text-anchor="middle" font-size="26">🗄️</text>
+  <text x="1092" y="232" text-anchor="middle" font-size="15" font-weight="600" fill="#1e293b">Vector store</text>
+  <text x="1092" y="252" text-anchor="middle" font-size="12" fill="#64748b">local numpy index</text>
+
+  <!-- Lane A arrows -->
+  <line x1="304" y1="215" x2="356" y2="215" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="608" y1="215" x2="660" y2="215" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="912" y1="215" x2="964" y2="215" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ===== Retrieval connector ===== -->
+  <path d="M1092,270 C1092,360 636,360 636,486" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-dasharray="7 6" marker-end="url(#arrowDash)"/>
+  <g transform="translate(864,348)">
+    <rect x="-104" y="-17" width="208" height="34" rx="17" fill="#eef2ff" stroke="#c7d2fe"/>
+    <text x="0" y="5" text-anchor="middle" font-size="13" font-weight="600" fill="#4f46e5">semantic search over the library</text>
+  </g>
+
+  <!-- ===== Lane B: Answering ===== -->
+  <rect x="24" y="466" width="1232" height="196" rx="20" fill="#ecfeff"/>
+  <circle cx="56" cy="498" r="13" fill="url(#accent)"/>
+  <text x="56" y="503" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">2</text>
+  <text x="80" y="503" font-size="16" font-weight="700" fill="#0e7490">Answering a question</text>
+  <text x="270" y="503" font-size="13" fill="#0891b2">runs live for every patient question</text>
+
+  <!-- Lane B boxes -->
+  <g filter="url(#shadow)">
+    <rect x="56"   y="522" width="200" height="110" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="296"  y="522" width="200" height="110" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="536"  y="522" width="200" height="110" rx="14" fill="#ffffff" stroke="#c7d2fe"/>
+    <rect x="776"  y="522" width="200" height="110" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="1016" y="522" width="200" height="110" rx="14" fill="url(#accent)"/>
+  </g>
+
+  <text x="156" y="564" text-anchor="middle" font-size="24">💬</text>
+  <text x="156" y="592" text-anchor="middle" font-size="14.5" font-weight="600" fill="#1e293b">Patient question</text>
+  <text x="156" y="611" text-anchor="middle" font-size="12" fill="#64748b">via the web chat</text>
+
+  <text x="396" y="564" text-anchor="middle" font-size="24">🔎</text>
+  <text x="396" y="592" text-anchor="middle" font-size="14.5" font-weight="600" fill="#1e293b">Embed the query</text>
+  <text x="396" y="611" text-anchor="middle" font-size="12" fill="#64748b">Gemini embeddings</text>
+
+  <text x="636" y="564" text-anchor="middle" font-size="24">🧩</text>
+  <text x="636" y="592" text-anchor="middle" font-size="14.5" font-weight="600" fill="#1e293b">Retrieve top-k chunks</text>
+  <text x="636" y="611" text-anchor="middle" font-size="12" fill="#64748b">most relevant passages</text>
+
+  <text x="876" y="564" text-anchor="middle" font-size="24">🤖</text>
+  <text x="876" y="592" text-anchor="middle" font-size="14.5" font-weight="600" fill="#1e293b">LLM writes answer</text>
+  <text x="876" y="611" text-anchor="middle" font-size="12" fill="#64748b">Gemini Flash / Claude Haiku</text>
+
+  <text x="1116" y="564" text-anchor="middle" font-size="24">✅</text>
+  <text x="1116" y="592" text-anchor="middle" font-size="14.5" font-weight="700" fill="#ffffff">Grounded answer</text>
+  <text x="1116" y="611" text-anchor="middle" font-size="12" fill="#e0e7ff">with source citations</text>
+
+  <!-- Lane B arrows -->
+  <line x1="256" y1="577" x2="292" y2="577" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="496" y1="577" x2="532" y2="577" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="736" y1="577" x2="772" y2="577" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="976" y1="577" x2="1012" y2="577" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Footer disclaimer -->
+  <g transform="translate(640,706)">
+    <rect x="-300" y="-22" width="600" height="44" rx="22" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="0" y="5" text-anchor="middle" font-size="13.5" fill="#92660b">⚠️  Educational tool — grounded in published research, not medical advice</text>
+  </g>
+</svg>

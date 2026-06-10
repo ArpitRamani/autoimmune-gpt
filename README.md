@@ -7,11 +7,7 @@ model's own memory. Built on Gemini Flash (chat) + Gemini embeddings (retrieval)
 A Next.js chat front end talks to a Python (FastAPI) backend that does the **RAG**
 (Retrieval-Augmented Generation):
 
-```
-PDFs you curate  ──►  ingest.py  ──►  text chunks + embeddings  (stored locally)
-                                              │
-  patient question ──► embed ──► find most relevant chunks ──► Gemini Flash ──► grounded answer + citations
-```
+![RAG workflow](docs/rag-workflow.svg)
 
 Because the model is instructed to answer **only** from the retrieved chunks, it can't wander
 off into unvetted claims, and every answer comes with the source paper + page.
