@@ -4,7 +4,8 @@ A small, low-cost chatbot that lets patients and caregivers ask questions and ge
 **grounded only in a curated library of research papers** — not the open internet, and not the
 model's own memory. Built on Gemini Flash (chat) + Gemini embeddings (retrieval).
 
-This is a **RAG** (Retrieval-Augmented Generation) system:
+A Next.js chat front end talks to a Python (FastAPI) backend that does the **RAG**
+(Retrieval-Augmented Generation):
 
 ```
 PDFs you curate  ──►  ingest.py  ──►  text chunks + embeddings  (stored locally)
@@ -44,11 +45,24 @@ python backend/ingest.py
 
 ## Run it
 
+Two processes — the Python API and the Next.js web app.
+
+Terminal 1 — the backend API (port 8000):
+
 ```bash
 uvicorn backend.server:app --reload --port 8000
 ```
 
-Open **http://localhost:8000** and start asking questions.
+Terminal 2 — the web app (port 3000):
+
+```bash
+cd web
+npm install        # first time only
+cp .env.local.example .env.local   # points the app at the backend
+npm run dev
+```
+
+Open **http://localhost:3000** and start asking questions.
 
 ---
 
@@ -80,8 +94,9 @@ backend/
   gemini_client.py  Gemini SDK wrapper (embeddings + chat, batching + retries)
   ingest.py         PDF -> chunks -> embeddings -> local index
   rag.py            retrieval + grounded answer generation
-  server.py         FastAPI: serves the page + /api/chat
-frontend/
-  index.html        the chat page
+  server.py         FastAPI: the /api/chat endpoint
+web/                Next.js + Tailwind chat front end
+  app/components/Chat.tsx   the chat UI
+  app/api/chat/route.ts     proxies requests to the Python backend
 data/papers/        <- you put PDFs here
 ```

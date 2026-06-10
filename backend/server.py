@@ -3,15 +3,13 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from rag import RagEngine
 
-app = FastAPI(title="Autoimmune Research Assistant")
+app = FastAPI(title="Autoimmune Research Assistant API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,8 +17,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
 _engine: RagEngine | None = None
 
@@ -54,11 +50,3 @@ def chat(req: ChatRequest):
 @app.get("/api/health")
 def health():
     return {"ok": True}
-
-
-@app.get("/")
-def index():
-    return FileResponse(FRONTEND_DIR / "index.html")
-
-
-app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
