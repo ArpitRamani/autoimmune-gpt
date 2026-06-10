@@ -1,0 +1,8 @@
+.env
+backend/store/*.json
+backend/store/*.npz
+__pycache__/
+*.pyc
+.venv/
+venv/
+.DS_Store
