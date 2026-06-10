@@ -1,0 +1,9 @@
+.venv
+venv
+__pycache__
+*.pyc
+.git
+web/node_modules
+web/.next
+backend/store
+.env

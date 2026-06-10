@@ -43,7 +43,26 @@ Then build the index (re-run this whenever you add/remove papers):
 python backend/ingest.py
 ```
 
-## Run it
+## Run with Docker (one command)
+
+If you have Docker Desktop, this is the easiest way to try it.
+
+```bash
+cp .env.example .env          # then paste your Gemini key into .env
+# put your PDFs in data/papers/
+
+docker compose run --rm backend python ingest.py   # build the index (once per paper change)
+docker compose up --build                          # start the API + web app
+```
+
+Open **http://localhost:3000**.
+
+The backend runs on port 8000, the web app on 3000. Your papers (`data/`) and the generated
+index (`backend/store/`) are mounted from your machine, so they persist between runs.
+
+---
+
+## Run it without Docker
 
 Two processes — the Python API and the Next.js web app.
 
