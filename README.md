@@ -29,6 +29,23 @@ cp .env.example .env
 # then edit .env and paste your free key from https://aistudio.google.com/apikey
 ```
 
+## Choosing who writes the answers (Gemini or Claude)
+
+Retrieval (embeddings) always runs on Gemini — Anthropic has no embedding model — but
+the answer-writing step can run on either provider. Set this in `.env`:
+
+```bash
+# Default — Gemini Flash writes the answers
+CHAT_PROVIDER=gemini
+
+# Or use Claude (Haiku by default). Also set ANTHROPIC_API_KEY.
+CHAT_PROVIDER=anthropic
+ANTHROPIC_API_KEY=sk-ant-...
+ANTHROPIC_CHAT_MODEL=claude-haiku-4-5
+```
+
+So `anthropic` mode needs **both** keys: Gemini for retrieval, Claude for the answers.
+
 ## Add your research
 
 Drop the PDFs you want the assistant to use into:
@@ -111,6 +128,8 @@ reviewer sign off, and confirm you have the rights to use the papers you ingest.
 backend/
   config.py         settings + paths (chunk size, top-k, models)
   gemini_client.py  Gemini SDK wrapper (embeddings + chat, batching + retries)
+  anthropic_client.py  Claude SDK wrapper (answer generation)
+  llm.py            picks the answer provider from CHAT_PROVIDER
   ingest.py         PDF -> chunks -> embeddings -> local index
   rag.py            retrieval + grounded answer generation
   server.py         FastAPI: the /api/chat endpoint

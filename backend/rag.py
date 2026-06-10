@@ -5,7 +5,8 @@ from typing import List, Dict
 import numpy as np
 
 import config
-from gemini_client import embed_texts, generate
+from gemini_client import embed_texts
+from llm import generate
 
 SYSTEM_PROMPT = """You are a research-access assistant for the autoimmune patient community.
 Your job is to help patients and caregivers understand published research.
