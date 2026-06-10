@@ -9,7 +9,7 @@ import numpy as np
 from pypdf import PdfReader
 
 import config
-from gemini_client import embed_texts
+from embeddings import embed_texts
 
 
 def extract_pages(pdf_path: Path) -> List[str]:
@@ -50,7 +50,7 @@ def chunk_pages(pages: List[str], source: str) -> List[Dict]:
 
 
 def main() -> int:
-    config.require_api_key()
+    # No API key needed — embeddings run locally.
     config.STORE_DIR.mkdir(parents=True, exist_ok=True)
 
     pdfs = sorted(config.PAPERS_DIR.glob("*.pdf"))

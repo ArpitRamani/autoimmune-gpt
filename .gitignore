@@ -3,6 +3,7 @@
 data/papers/*.pdf
 backend/store/*.json
 backend/store/*.npz
+backend/store/models/
 __pycache__/
 *.pyc
 .venv/

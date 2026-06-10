@@ -4,10 +4,10 @@ services:
       context: .
       dockerfile: backend/Dockerfile
     environment:
-      GEMINI_API_KEY: ${GEMINI_API_KEY:?Set GEMINI_API_KEY in a .env file first}
-      CHAT_PROVIDER: ${CHAT_PROVIDER:-gemini}
+      CHAT_PROVIDER: ${CHAT_PROVIDER:-anthropic}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       ANTHROPIC_CHAT_MODEL: ${ANTHROPIC_CHAT_MODEL:-claude-haiku-4-5}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     volumes:
       - ./data:/app/data
       - ./backend/store:/app/backend/store

@@ -9,13 +9,16 @@ load_dotenv(PROJECT_ROOT / ".env")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
 
-# Which provider writes the answers: "gemini" or "anthropic".
-# Embeddings always use Gemini (Anthropic has no embedding model).
-CHAT_PROVIDER = os.getenv("CHAT_PROVIDER", "gemini").strip().lower()
+# Which provider writes the answers: "anthropic" (default) or "gemini".
+CHAT_PROVIDER = os.getenv("CHAT_PROVIDER", "anthropic").strip().lower()
 
-CHAT_MODEL = os.getenv("GEMINI_CHAT_MODEL", "gemini-2.0-flash").strip()
-EMBED_MODEL = os.getenv("GEMINI_EMBED_MODEL", "text-embedding-004").strip()
+# Embeddings run locally (no API key) — see embeddings.py.
+EMBED_MODEL = os.getenv("EMBED_MODEL", "BAAI/bge-small-en-v1.5").strip()
+
 ANTHROPIC_CHAT_MODEL = os.getenv("ANTHROPIC_CHAT_MODEL", "claude-haiku-4-5").strip()
+
+# Only used if CHAT_PROVIDER=gemini (optional fallback).
+CHAT_MODEL = os.getenv("GEMINI_CHAT_MODEL", "gemini-2.0-flash").strip()
 
 PAPERS_DIR = PROJECT_ROOT / "data" / "papers"
 STORE_DIR = Path(__file__).resolve().parent / "store"

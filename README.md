@@ -2,7 +2,8 @@
 
 A small, low-cost chatbot that lets patients and caregivers ask questions and get answers
 **grounded only in a curated library of research papers** — not the open internet, and not the
-model's own memory. Built on Gemini Flash (chat) + Gemini embeddings (retrieval).
+model's own memory. Answers are written by **Claude (Haiku)**; retrieval uses a **local
+embedding model** that runs on-device, so the only API key you need is for Claude.
 
 A Next.js chat front end talks to a Python (FastAPI) backend that does the **RAG**
 (Retrieval-Augmented Generation):
@@ -22,25 +23,18 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
 cp .env.example .env
-# then edit .env and paste your free key from https://aistudio.google.com/apikey
+# then edit .env and paste your Claude key from https://console.anthropic.com/
 ```
 
-## Choosing who writes the answers (Gemini or Claude)
+## Providers
 
-Retrieval (embeddings) always runs on Gemini — Anthropic has no embedding model — but
-the answer-writing step can run on either provider. Set this in `.env`:
+- **Embeddings (retrieval)** run **locally** — a small `bge-small` model via `fastembed`,
+  downloaded once and cached. No API key, no per-call cost.
+- **Answers** are written by **Claude Haiku** by default. The first time the model runs it
+  downloads (~130 MB); after that it's on-device.
 
-```bash
-# Default — Gemini Flash writes the answers
-CHAT_PROVIDER=gemini
-
-# Or use Claude (Haiku by default). Also set ANTHROPIC_API_KEY.
-CHAT_PROVIDER=anthropic
-ANTHROPIC_API_KEY=sk-ant-...
-ANTHROPIC_CHAT_MODEL=claude-haiku-4-5
-```
-
-So `anthropic` mode needs **both** keys: Gemini for retrieval, Claude for the answers.
+You can optionally switch the answer step to Gemini by setting `CHAT_PROVIDER=gemini` and
+`GEMINI_API_KEY=...` in `.env`, but the default needs only an `ANTHROPIC_API_KEY`.
 
 ## Add your research
 
@@ -61,7 +55,7 @@ python backend/ingest.py
 If you have Docker Desktop, this is the easiest way to try it.
 
 ```bash
-cp .env.example .env          # then paste your Gemini key into .env
+cp .env.example .env          # then paste your Claude key into .env
 # put your PDFs in data/papers/
 
 docker compose run --rm backend python ingest.py   # build the index (once per paper change)
@@ -101,11 +95,12 @@ Open **http://localhost:3000** and start asking questions.
 ## Cost
 
 Roughly, for a small library:
-- **Embedding** the papers: a one-time cost, fractions of a cent per paper.
-- **Each question**: one small embedding call + one Gemini Flash call — well under a cent each.
+- **Embedding** the papers: **free** — it runs locally, no API calls.
+- **Each question**: one local embedding (free) + one Claude Haiku call — well under a cent each.
 
-Gemini Flash is one of the cheapest capable models available, which is why it fits a
-patient-facing, possibly-high-volume tool.
+Claude Haiku is one of the cheaper capable models ($1 / $5 per million input / output tokens),
+which fits a patient-facing, possibly-high-volume tool. Moving embeddings on-device removes the
+per-call retrieval cost entirely.
 
 ## Safety design
 
@@ -123,8 +118,9 @@ reviewer sign off, and confirm you have the rights to use the papers you ingest.
 ```
 backend/
   config.py         settings + paths (chunk size, top-k, models)
-  gemini_client.py  Gemini SDK wrapper (embeddings + chat, batching + retries)
+  embeddings.py     local on-device embeddings (fastembed, no API key)
   anthropic_client.py  Claude SDK wrapper (answer generation)
+  gemini_client.py  optional Gemini chat fallback
   llm.py            picks the answer provider from CHAT_PROVIDER
   ingest.py         PDF -> chunks -> embeddings -> local index
   rag.py            retrieval + grounded answer generation
