@@ -17,7 +17,7 @@ CHAT_MODEL = os.getenv("GEMINI_CHAT_MODEL", "gemini-2.0-flash").strip()
 # Which provider does the embeddings/retrieval: "local" (default, no key) or "gemini".
 EMBED_PROVIDER = os.getenv("EMBED_PROVIDER", "local").strip().lower()
 LOCAL_EMBED_MODEL = os.getenv("LOCAL_EMBED_MODEL", "BAAI/bge-small-en-v1.5").strip()
-GEMINI_EMBED_MODEL = os.getenv("GEMINI_EMBED_MODEL", "text-embedding-004").strip()
+GEMINI_EMBED_MODEL = os.getenv("GEMINI_EMBED_MODEL", "gemini-embedding-001").strip()
 
 
 def embed_signature() -> str:

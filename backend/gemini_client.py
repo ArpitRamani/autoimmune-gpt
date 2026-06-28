@@ -16,7 +16,7 @@ def client() -> genai.Client:
     return _client
 
 
-def embed_texts(texts: List[str], *, task_type: str = "RETRIEVAL_DOCUMENT", batch_size: int = 100) -> List[List[float]]:
+def embed_texts(texts: List[str], *, task_type: str = "RETRIEVAL_DOCUMENT", batch_size: int = 32) -> List[List[float]]:
     """Used when EMBED_PROVIDER=gemini. task_type is RETRIEVAL_DOCUMENT for stored
     chunks or RETRIEVAL_QUERY for a question."""
     out: List[List[float]] = []
