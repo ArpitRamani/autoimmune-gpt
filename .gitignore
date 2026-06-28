@@ -1,6 +1,9 @@
 .env
 # Curated research PDFs stay local/private — never commit copyrighted papers.
 data/papers/*.pdf
+data/**/*.pdf
+data/*.zip
+data/papers.zip
 backend/store/*.json
 backend/store/*.npz
 backend/store/models/

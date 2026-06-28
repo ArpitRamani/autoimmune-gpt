@@ -2,8 +2,9 @@
 
 A small, low-cost chatbot that lets patients and caregivers ask questions and get answers
 **grounded only in a curated library of research papers** — not the open internet, and not the
-model's own memory. Answers are written by **Claude (Haiku)**; retrieval uses a **local
-embedding model** that runs on-device, so the only API key you need is for Claude.
+model's own memory. Both the **answer** step and the **embedding** step are pluggable: answers
+default to **Claude (Haiku)**, and embeddings default to a **local on-device model** (no key) but
+can switch to **Gemini**.
 
 A Next.js chat front end talks to a Python (FastAPI) backend that does the **RAG**
 (Retrieval-Augmented Generation):
@@ -28,13 +29,18 @@ cp .env.example .env
 
 ## Providers
 
-- **Embeddings (retrieval)** run **locally** — a small `bge-small` model via `fastembed`,
-  downloaded once and cached. No API key, no per-call cost.
-- **Answers** are written by **Claude Haiku** by default. The first time the model runs it
-  downloads (~130 MB); after that it's on-device.
+Two independent choices, both set in `.env`:
 
-You can optionally switch the answer step to Gemini by setting `CHAT_PROVIDER=gemini` and
-`GEMINI_API_KEY=...` in `.env`, but the default needs only an `ANTHROPIC_API_KEY`.
+| Step | Env var | Options | Default |
+|---|---|---|---|
+| **Answers** | `CHAT_PROVIDER` | `anthropic` (Claude Haiku) · `gemini` (Flash) | `anthropic` |
+| **Embeddings** | `EMBED_PROVIDER` | `local` (on-device, free, no key) · `gemini` (text-embedding-004) | `local` |
+
+Set the key(s) for whatever you pick — `ANTHROPIC_API_KEY` and/or `GEMINI_API_KEY`.
+
+> ⚠️ **If you change `EMBED_PROVIDER`, re-run `ingest.py`.** The index must be built and queried
+> with the same embedder (different models produce different, incompatible vectors). The app
+> refuses to answer on a mismatch and tells you to re-ingest, rather than returning nonsense.
 
 ## Add your research
 
@@ -95,12 +101,12 @@ Open **http://localhost:3000** and start asking questions.
 ## Cost
 
 Roughly, for a small library:
-- **Embedding** the papers: **free** — it runs locally, no API calls.
-- **Each question**: one local embedding (free) + one Claude Haiku call — well under a cent each.
+- **Embedding** the papers: **free** with `EMBED_PROVIDER=local`; a fraction of a cent per paper
+  with `gemini`.
+- **Each question**: one embedding (free locally) + one Claude Haiku call — well under a cent each.
 
 Claude Haiku is one of the cheaper capable models ($1 / $5 per million input / output tokens),
-which fits a patient-facing, possibly-high-volume tool. Moving embeddings on-device removes the
-per-call retrieval cost entirely.
+which fits a patient-facing, possibly-high-volume tool.
 
 ## Safety design
 
@@ -118,9 +124,9 @@ reviewer sign off, and confirm you have the rights to use the papers you ingest.
 ```
 backend/
   config.py         settings + paths (chunk size, top-k, models)
-  embeddings.py     local on-device embeddings (fastembed, no API key)
+  embeddings.py     embeddings dispatcher — local (fastembed) or Gemini
   anthropic_client.py  Claude SDK wrapper (answer generation)
-  gemini_client.py  optional Gemini chat fallback
+  gemini_client.py  Gemini SDK wrapper (embeddings + optional chat)
   llm.py            picks the answer provider from CHAT_PROVIDER
   ingest.py         PDF -> chunks -> embeddings -> local index
   rag.py            retrieval + grounded answer generation

@@ -49,8 +49,8 @@
   <text x="484" y="252" text-anchor="middle" font-size="12" fill="#64748b">pypdf · ~1.2k-char windows</text>
 
   <text x="788" y="202" text-anchor="middle" font-size="26">🔢</text>
-  <text x="788" y="232" text-anchor="middle" font-size="15" font-weight="600" fill="#1e293b">Local embeddings</text>
-  <text x="788" y="252" text-anchor="middle" font-size="12" fill="#64748b">bge-small · no API key</text>
+  <text x="788" y="232" text-anchor="middle" font-size="15" font-weight="600" fill="#1e293b">Embeddings</text>
+  <text x="788" y="252" text-anchor="middle" font-size="12" fill="#64748b">local (free) or Gemini</text>
 
   <text x="1092" y="202" text-anchor="middle" font-size="26">🗄️</text>
   <text x="1092" y="232" text-anchor="middle" font-size="15" font-weight="600" fill="#1e293b">Vector store</text>
@@ -90,7 +90,7 @@
 
   <text x="396" y="564" text-anchor="middle" font-size="24">🔎</text>
   <text x="396" y="592" text-anchor="middle" font-size="14.5" font-weight="600" fill="#1e293b">Embed the query</text>
-  <text x="396" y="611" text-anchor="middle" font-size="12" fill="#64748b">local model</text>
+  <text x="396" y="611" text-anchor="middle" font-size="12" fill="#64748b">same embedder</text>
 
   <text x="636" y="564" text-anchor="middle" font-size="24">🧩</text>
   <text x="636" y="592" text-anchor="middle" font-size="14.5" font-weight="600" fill="#1e293b">Retrieve top-k chunks</text>

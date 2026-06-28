@@ -71,13 +71,18 @@ def main() -> int:
         print("Extracted 0 usable chunks. Are these scanned (image-only) PDFs?")
         return 1
 
-    print(f"\nEmbedding {len(all_chunks)} chunks with {config.EMBED_MODEL} ...")
+    print(f"\nEmbedding {len(all_chunks)} chunks with {config.embed_signature()} ...")
     vectors = embed_texts([c["text"] for c in all_chunks], task_type="RETRIEVAL_DOCUMENT")
     matrix = np.array(vectors, dtype=np.float32)
     matrix /= (np.linalg.norm(matrix, axis=1, keepdims=True) + 1e-12)
 
     np.savez_compressed(config.VECTORS_PATH, vectors=matrix)
     config.CHUNKS_PATH.write_text(json.dumps(all_chunks, ensure_ascii=False, indent=2))
+    config.META_PATH.write_text(json.dumps({
+        "embed_signature": config.embed_signature(),
+        "dim": int(matrix.shape[1]),
+        "chunks": len(all_chunks),
+    }, indent=2))
 
     print(f"\nDone. Indexed {len(all_chunks)} chunks from {len(pdfs)} paper(s).")
     print(f"  vectors -> {config.VECTORS_PATH}")

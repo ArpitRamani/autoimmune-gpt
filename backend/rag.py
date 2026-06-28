@@ -48,12 +48,33 @@ class RagEngine:
                 "Index not found. Add PDFs to data/papers/ and run:\n"
                 "    python backend/ingest.py\n"
             )
+        self._check_embed_match()
         self.matrix = np.load(config.VECTORS_PATH)["vectors"]
         self.chunks: List[Dict] = json.loads(config.CHUNKS_PATH.read_text())
+
+    @staticmethod
+    def _check_embed_match():
+        # The index must be queried with the same embedder that built it.
+        if not config.META_PATH.exists():
+            return
+        built = json.loads(config.META_PATH.read_text()).get("embed_signature")
+        current = config.embed_signature()
+        if built and built != current:
+            raise SystemExit(
+                f"Embedding mismatch: index was built with '{built}' but EMBED_PROVIDER "
+                f"is now '{current}'. Re-run ingest to rebuild:\n"
+                "    python backend/ingest.py\n"
+            )
 
     def retrieve(self, question: str) -> List[Source]:
         q = embed_texts([question], task_type="RETRIEVAL_QUERY")[0]
         qv = np.array(q, dtype=np.float32)
+        if qv.shape[0] != self.matrix.shape[1]:
+            raise SystemExit(
+                f"Embedding dimension mismatch (index={self.matrix.shape[1]}, "
+                f"query={qv.shape[0]}). The index was built with a different embedder — "
+                "re-run: python backend/ingest.py\n"
+            )
         qv /= (np.linalg.norm(qv) + 1e-12)
         scores = self.matrix @ qv
         top_idx = np.argsort(-scores)[: config.TOP_K]
