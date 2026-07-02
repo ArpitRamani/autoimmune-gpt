@@ -1,0 +1,6 @@
+# One URL per line — pages from the association's site to include in the index.
+# Lines starting with # are ignored. Re-run ingest after editing.
+#
+# Example:
+# https://autoimmune.org/resource-center/what-is-an-autoimmune-disease/
+# https://autoimmune.org/disease-information/

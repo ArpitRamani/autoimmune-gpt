@@ -10,6 +10,7 @@ from pypdf import PdfReader
 
 import config
 from embeddings import embed_texts
+from web_sources import load_web_chunks
 
 
 def extract_pages(pdf_path: Path) -> List[str]:
@@ -50,16 +51,12 @@ def chunk_pages(pages: List[str], source: str) -> List[Dict]:
 
 
 def main() -> int:
-    # No API key needed — embeddings run locally.
     config.STORE_DIR.mkdir(parents=True, exist_ok=True)
 
-    pdfs = sorted(config.PAPERS_DIR.glob("*.pdf"))
-    if not pdfs:
-        print(f"No PDFs found in {config.PAPERS_DIR}")
-        print("Drop your curated research papers there and re-run this script.")
-        return 1
-
     all_chunks: List[Dict] = []
+
+    # 1. PDFs in data/papers/
+    pdfs = sorted(config.PAPERS_DIR.glob("*.pdf"))
     for pdf in pdfs:
         print(f"Reading {pdf.name} ...", end=" ", flush=True)
         pages = extract_pages(pdf)
@@ -67,8 +64,12 @@ def main() -> int:
         all_chunks.extend(chunks)
         print(f"{len(pages)} pages -> {len(chunks)} chunks")
 
+    # 2. Web pages listed in data/urls.txt
+    web_chunks = load_web_chunks()
+    all_chunks.extend(web_chunks)
+
     if not all_chunks:
-        print("Extracted 0 usable chunks. Are these scanned (image-only) PDFs?")
+        print("Nothing to index. Add PDFs to data/papers/ or URLs to data/urls.txt.")
         return 1
 
     print(f"\nEmbedding {len(all_chunks)} chunks with {config.embed_signature()} ...")
@@ -84,7 +85,8 @@ def main() -> int:
         "chunks": len(all_chunks),
     }, indent=2))
 
-    print(f"\nDone. Indexed {len(all_chunks)} chunks from {len(pdfs)} paper(s).")
+    n_web = len({c["source"] for c in web_chunks})
+    print(f"\nDone. Indexed {len(all_chunks)} chunks from {len(pdfs)} paper(s) + {n_web} web page(s).")
     print(f"  vectors -> {config.VECTORS_PATH}")
     print(f"  chunks  -> {config.CHUNKS_PATH}")
     return 0

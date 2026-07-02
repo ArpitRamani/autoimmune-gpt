@@ -27,6 +27,7 @@ def embed_signature() -> str:
 
 
 PAPERS_DIR = PROJECT_ROOT / "data" / "papers"
+URLS_PATH = PROJECT_ROOT / "data" / "urls.txt"
 STORE_DIR = Path(__file__).resolve().parent / "store"
 VECTORS_PATH = STORE_DIR / "vectors.npz"
 CHUNKS_PATH = STORE_DIR / "chunks.json"

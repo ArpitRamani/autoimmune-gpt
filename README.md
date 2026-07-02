@@ -44,13 +44,13 @@ Set the key(s) for whatever you pick — `ANTHROPIC_API_KEY` and/or `GEMINI_API_
 
 ## Add your research
 
-Drop the PDFs you want the assistant to use into:
+Two sources, both indexed by the same command:
 
-```
-data/papers/
-```
+- **PDFs** — drop them in `data/papers/`
+- **Web pages** — list URLs (one per line) in `data/urls.txt`. Each page is fetched and its
+  **main article text** is extracted (nav/menus/footers stripped) before indexing.
 
-Then build the index (re-run this whenever you add/remove papers):
+Then build the index (re-run whenever you add/remove sources):
 
 ```bash
 python backend/ingest.py
