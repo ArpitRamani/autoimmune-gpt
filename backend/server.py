@@ -1,13 +1,18 @@
+import os
 import sys
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from rag import RagEngine
+
+# Shared secret between the web service and this API. When set, direct calls to
+# the API (bypassing the web app) are rejected — closes the public-URL hole.
+INTERNAL_TOKEN = os.getenv("INTERNAL_TOKEN", "").strip()
 
 app = FastAPI(title="Autoimmune Research Assistant API")
 
@@ -33,7 +38,9 @@ class ChatRequest(BaseModel):
 
 
 @app.post("/api/chat")
-def chat(req: ChatRequest):
+def chat(req: ChatRequest, x_internal_token: str = Header(default="")):
+    if INTERNAL_TOKEN and x_internal_token != INTERNAL_TOKEN:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     question = (req.message or "").strip()
     if not question:
         return {"answer": "Please type a question.", "sources": []}

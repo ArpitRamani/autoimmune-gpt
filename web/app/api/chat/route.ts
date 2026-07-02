@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 
 const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:8000";
+const PASSCODE = process.env.APP_PASSCODE ?? "";
 
 export async function POST(req: Request) {
+  // If a passcode is configured, require it. (No passcode set = open, for local dev.)
+  if (PASSCODE && req.headers.get("x-app-passcode") !== PASSCODE) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   let message = "";
   try {
     const body = await req.json();
@@ -14,7 +20,10 @@ export async function POST(req: Request) {
   try {
     const res = await fetch(`${BACKEND_URL}/api/chat`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-internal-token": process.env.INTERNAL_TOKEN ?? "",
+      },
       body: JSON.stringify({ message }),
     });
 

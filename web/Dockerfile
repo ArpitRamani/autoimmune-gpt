@@ -17,4 +17,5 @@ COPY --from=build /app/public ./public
 
 EXPOSE 3000
 
-CMD ["npx", "next", "start", "-H", "0.0.0.0", "-p", "3000"]
+# Shell form so $PORT (set by Cloud Run) is expanded; falls back to 3000 locally.
+CMD ["sh", "-c", "npx next start -H 0.0.0.0 -p ${PORT:-3000}"]

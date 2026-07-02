@@ -5,5 +5,7 @@ __pycache__
 .git
 web/node_modules
 web/.next
-backend/store
+# Bake the index (vectors.npz/chunks.json/meta.json) into the image for Cloud Run,
+# but never the large local model cache.
+backend/store/models
 .env

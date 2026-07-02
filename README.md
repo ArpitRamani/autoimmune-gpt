@@ -98,6 +98,29 @@ Open **http://localhost:3000** and start asking questions.
 
 ---
 
+## Deploy a test link (Google Cloud Run)
+
+Puts the app on a public `*.run.app` URL behind an access code — no domain needed.
+
+Prereqs: Docker running, `gcloud` logged into an account that has a **billing-enabled**
+project it can deploy to, and your keys in `.env`.
+
+```bash
+./deploy/cloudrun.sh <YOUR_PROJECT_ID>          # region defaults to us-central1
+```
+
+It builds both images, deploys the API + web app to Cloud Run, and prints the live URL and a
+generated **access code**. Two layers of protection are wired in automatically:
+
+- **Access code** (`APP_PASSCODE`) — testers must enter it to use the chat.
+- **Internal token** (`INTERNAL_TOKEN`) — the API only accepts calls from the web app, so nobody
+  can hit the backend URL directly and burn your API credit.
+
+Set your own `APP_PASSCODE` / `INTERNAL_TOKEN` in `.env` to reuse fixed values across deploys.
+To take it down: `gcloud run services delete autoimmune-web autoimmune-api --region us-central1`.
+
+---
+
 ## Cost
 
 Roughly, for a small library:

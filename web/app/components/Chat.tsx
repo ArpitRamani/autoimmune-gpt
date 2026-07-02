@@ -32,8 +32,22 @@ export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([GREETING]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
+
+  // On load: is a passcode required, and does a saved one still work?
+  useEffect(() => {
+    const saved = typeof window !== "undefined" ? localStorage.getItem("passcode") ?? "" : "";
+    fetch("/api/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: saved }),
+    })
+      .then((r) => r.json())
+      .then((d) => setUnlocked(!d.required || d.ok))
+      .catch(() => setUnlocked(true));
+  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -54,7 +68,10 @@ export default function Chat() {
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-app-passcode": localStorage.getItem("passcode") ?? "",
+        },
         body: JSON.stringify({ message: question }),
       });
       const data = await res.json();
@@ -90,6 +107,8 @@ export default function Chat() {
   }
 
   const showSuggestions = messages.length === 1;
+
+  if (!unlocked) return <Gate onUnlock={() => setUnlocked(true)} />;
 
   return (
     <div className="mx-auto flex h-[100dvh] w-full max-w-3xl flex-col px-4 py-4 sm:py-6">
@@ -145,6 +164,65 @@ export default function Chat() {
             Educational use only — not a substitute for professional medical advice.
           </p>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function Gate({ onUnlock }: { onUnlock: () => void }) {
+  const [code, setCode] = useState("");
+  const [error, setError] = useState(false);
+  const [checking, setChecking] = useState(false);
+
+  async function submit() {
+    if (!code.trim()) return;
+    setChecking(true);
+    setError(false);
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      const d = await res.json();
+      if (d.ok) {
+        localStorage.setItem("passcode", code);
+        onUnlock();
+      } else {
+        setError(true);
+      }
+    } catch {
+      setError(true);
+    } finally {
+      setChecking(false);
+    }
+  }
+
+  return (
+    <div className="grid h-[100dvh] place-items-center px-4">
+      <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/60">
+        <div className="mb-5 grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-sky-500 to-indigo-500 text-xl">
+          🧬
+        </div>
+        <h1 className="text-lg font-semibold text-slate-800">Autoimmune Research Assistant</h1>
+        <p className="mt-1 text-sm text-slate-500">Enter the access code to continue.</p>
+        <input
+          type="password"
+          value={code}
+          autoFocus
+          onChange={(e) => setCode(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && submit()}
+          placeholder="Access code"
+          className="mt-5 w-full rounded-xl border border-slate-200 px-4 py-2.5 text-[15px] text-slate-800 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
+        />
+        {error && <p className="mt-2 text-sm text-red-500">Incorrect code — try again.</p>}
+        <button
+          onClick={submit}
+          disabled={checking || !code.trim()}
+          className="mt-4 w-full rounded-xl bg-sky-600 py-2.5 text-[15px] font-semibold text-white transition hover:bg-sky-700 disabled:opacity-40"
+        >
+          {checking ? "Checking…" : "Enter"}
+        </button>
       </div>
     </div>
   );

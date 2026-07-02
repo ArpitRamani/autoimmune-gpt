@@ -11,6 +11,7 @@ services:
       LOCAL_EMBED_MODEL: ${LOCAL_EMBED_MODEL:-BAAI/bge-small-en-v1.5}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       GEMINI_EMBED_MODEL: ${GEMINI_EMBED_MODEL:-gemini-embedding-001}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-}
     volumes:
       - ./data:/app/data
       - ./backend/store:/app/backend/store
@@ -22,6 +23,8 @@ services:
       context: ./web
     environment:
       BACKEND_URL: http://backend:8000
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-}
+      APP_PASSCODE: ${APP_PASSCODE:-}
     ports:
       - "3000:3000"
     depends_on:
